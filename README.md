@@ -2,19 +2,22 @@
 
 List of all my open source contributions.
 
-**Total merged: 5**
+**Total merged: 6**
 
 ---
 
-## openrewrite/rewrite-static-analysis (5 merged)
+## openrewrite/rewrite-static-analysis (6 merged)
 
 | PR | Title | Date |
 |----|-------|------|
+| [#1064](https://github.com/openrewrite/rewrite-static-analysis/pull/1064) | `UnwrapRepeatableAnnotations`: only unwrap container annotations | 2026-09-17 |
 | [#1036](https://github.com/openrewrite/rewrite-static-analysis/pull/1036) | `DeclarationSiteTypeVariance`: skip `@Override` methods when the supertype is unresolved | 2026-09-17 |
 | [#1035](https://github.com/openrewrite/rewrite-static-analysis/pull/1035) | `NoDoubleBraceInitialization`: don't retarget invocations inside nested anonymous classes | 2026-09-17 |
 | [#1008](https://github.com/openrewrite/rewrite-static-analysis/pull/1008) | `FallThrough`: don't add a `break` after a guarded early exit | 2026-09-17 |
 | [#1022](https://github.com/openrewrite/rewrite-static-analysis/pull/1022) | `NoValueOfOnStringType`: keep `String.valueOf` when the argument can be null | 2026-08-30 |
 | [#998](https://github.com/openrewrite/rewrite-static-analysis/pull/998) | `UnnecessaryExplicitTypeArguments`: retain witness when enclosing method has dependent type parameters | 2026-08-14 |
+
+Fixed [#389](https://github.com/openrewrite/rewrite-static-analysis/issues/389), where the recipe replaced any annotation containing a repeatable annotation with that inner annotation, discarding the outer one and its other elements and breaking Jakarta Persistence mappings at runtime.
 
 Fixed [#277](https://github.com/openrewrite/rewrite-static-analysis/issues/277), a 2.5-year-old bug where the recipe added `? super`/`? extends` variance to an `@Override` method whose superclass lived outside the source set, making the override incompatible with its declaration.
 
