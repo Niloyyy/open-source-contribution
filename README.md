@@ -2,7 +2,17 @@
 
 List of all my open source contributions.
 
-**Total merged: 6**
+**Total merged: 7**
+
+---
+
+## openrewrite/rewrite (1 merged)
+
+| PR | Title | Date |
+|----|-------|------|
+| [#8664](https://github.com/openrewrite/rewrite/pull/8664) | Gradle: disable the no-repositories metadata test only when a mirror is injected | 2026-09-21 |
+
+Replaced a blanket `@Disabled` on `UpgradeDependencyVersionTest.cannotDownloadMetaDataWhenNoRepositoriesAreDefined` (carried since [#7566](https://github.com/openrewrite/rewrite/pull/7566)) with a conditional `@DisabledIfEnvironmentVariable`, re-enabling the test for contributors building without a mirror configured instead of being skipped everywhere.
 
 ---
 
