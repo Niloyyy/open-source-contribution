@@ -2,15 +2,18 @@
 
 List of all my open source contributions.
 
-**Total merged: 7**
+**Total merged: 8**
 
 ---
 
-## openrewrite/rewrite (1 merged)
+## openrewrite/rewrite (2 merged)
 
 | PR | Title | Date |
 |----|-------|------|
+| [#8904](https://github.com/openrewrite/rewrite/pull/8904) | Fix merging duplicate nested YAML sections after unfolding | 2026-09-22 |
 | [#8664](https://github.com/openrewrite/rewrite/pull/8664) | Gradle: disable the no-repositories metadata test only when a mirror is injected | 2026-09-21 |
+
+Fixed [#8838](https://github.com/openrewrite/rewrite/issues/8838), where `UnfoldProperties` left duplicate sibling mapping keys because `MergeDuplicateSectionsVisitor` treated indentation whitespace as comments and skipped merging them, causing YAML parsers like SnakeYAML to fail on duplicate keys.
 
 Replaced a blanket `@Disabled` on `UpgradeDependencyVersionTest.cannotDownloadMetaDataWhenNoRepositoriesAreDefined` (carried since [#7566](https://github.com/openrewrite/rewrite/pull/7566)) with a conditional `@DisabledIfEnvironmentVariable`, re-enabling the test for contributors building without a mirror configured instead of being skipped everywhere.
 
