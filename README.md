@@ -2,16 +2,19 @@
 
 List of all my open source contributions.
 
-**Total merged: 8**
+**Total merged: 9**
 
 ---
 
-## openrewrite/rewrite (2 merged)
+## openrewrite/rewrite (3 merged)
 
 | PR | Title | Date |
 |----|-------|------|
+| [#8964](https://github.com/openrewrite/rewrite/pull/8964) | Preserve Java import comments through ordering and folding | 2026-09-29 |
 | [#8904](https://github.com/openrewrite/rewrite/pull/8904) | Fix merging duplicate nested YAML sections after unfolding | 2026-09-22 |
 | [#8664](https://github.com/openrewrite/rewrite/pull/8664) | Gradle: disable the no-repositories metadata test only when a mirror is injected | 2026-09-21 |
+
+Fixed [#6143](https://github.com/openrewrite/rewrite/issues/6143), an 11-month-old bug where `OrderImports` moved trailing end-of-line comments to incorrect imports during reordering, lost leading comments when imports moved first, duplicated section headers, or discarded comments during wildcard folding.
 
 Fixed [#8838](https://github.com/openrewrite/rewrite/issues/8838), where `UnfoldProperties` left duplicate sibling mapping keys because `MergeDuplicateSectionsVisitor` treated indentation whitespace as comments and skipped merging them, causing YAML parsers like SnakeYAML to fail on duplicate keys.
 
