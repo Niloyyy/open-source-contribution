@@ -2,7 +2,7 @@
 
 List of all my open source contributions.
 
-**Total merged: 9**
+**Total merged: 10**
 
 ---
 
@@ -29,7 +29,14 @@ The test `cannotDownloadMetaDataWhenNoRepositoriesAreDefined` verifies that Open
 
 ---
 
-## openrewrite/rewrite-static-analysis (6 merged)
+## openrewrite/rewrite-static-analysis (7 merged)
+
+### [#1132](https://github.com/openrewrite/rewrite-static-analysis/pull/1132) — `UseJavaStyleArrayDeclarations`: only rewrite declarations with matching dimensions
+*Merged: 2026-10-26*
+
+The `UseJavaStyleArrayDeclarations` recipe converts C-style array brackets placed after a variable name (`int a[];`) into standard Java-style brackets on the type (`int[] a;`). However, in issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116), when a single statement declared multiple variables with different array dimensions—such as `int a, b[];` or `for (int i = 0, arr[] = {1, 2}; ...)`—the recipe stripped the brackets from each variable and applied the last array variable's dimensions to the shared type, corrupting the code into `int[] a, b;` or `int[] i = 0, arr = {1, 2};`. This PR updated `visitVariableDeclarations` to verify that all variables in a declaration share the same post-name dimension count before moving the brackets onto the shared type, while removing the error-prone cursor message previously used between visitors. This prevents the recipe from turning non-array variables (like loop counters) into arrays or mismatching multi-dimensional arrays, eliminating severe type-mismatch compiler errors when running `UseJavaStyleArrayDeclarations` or `CommonStaticAnalysis`.
+
+---
 
 ### [#1064](https://github.com/openrewrite/rewrite-static-analysis/pull/1064) — `UnwrapRepeatableAnnotations`: only unwrap container annotations
 *Merged: 2026-09-17*
