@@ -2,7 +2,7 @@
 
 List of all my open source contributions.
 
-**Total merged: 10**
+**Total merged: 13**
 
 ---
 
@@ -29,7 +29,28 @@ The test `cannotDownloadMetaDataWhenNoRepositoriesAreDefined` verifies that Open
 
 ---
 
-## openrewrite/rewrite-static-analysis (7 merged)
+## openrewrite/rewrite-static-analysis (10 merged)
+
+### [#1161](https://github.com/openrewrite/rewrite-static-analysis/pull/1161) — `UseDiamondOperator`: keep type arguments of an anonymous class assigned to a wildcard type
+*Merged: 2026-10-28*
+
+The `UseDiamondOperator` recipe modernizes Java generic instantiations by replacing explicit type arguments with the diamond operator (`new ArrayList<>()`). In Java 9+, the diamond operator is also supported on anonymous class instantiations, but only when Java can cleanly infer concrete types. In issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item C10), when an anonymous class was assigned to a variable with wildcard type bounds (such as `Consumer<?> c = new Consumer<String>() { ... };` or `Consumer<? extends CharSequence>`), the recipe stripped the explicit type into `new Consumer<>() { ... }`. Because the diamond infers `Consumer<Object>`, the Java compiler rejects the code with compilation errors stating that the anonymous class fails to implement the required method signatures. This PR added a check in `maybeRemoveParams` that skips adding diamond operators to anonymous classes whenever the target type has wildcard type arguments. This ensures that cleaning up generic instantiations never generates invalid wildcard inferences, eliminating compile-time method-override errors on Java 9+ codebases.
+
+---
+
+### [#1164](https://github.com/openrewrite/rewrite-static-analysis/pull/1164) — `ReplaceClassIsInstanceWithInstanceof`: skip incompatible types or primitives
+*Merged: 2026-10-28*
+
+The `ReplaceClassIsInstanceWithInstanceof` recipe modernizes reflection-based checks like `String.class.isInstance(obj)` into standard Java `obj instanceof String` expressions. However, while `Class.isInstance(obj)` returns `false` safely at runtime when types cannot be cast or when checking primitive values, Java language specification rules for `instanceof` require both types to be cast-convertible reference types. In issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item C12), the recipe blindly transformed checks involving completely incompatible types (such as `Integer.class.isInstance(str)`, `String.class.isInstance(num)`, array types, or primitives like `hashcode()`), generating code that failed to compile with `incompatible types` or `required reference, found int` errors. This PR introduced comprehensive type-compatibility verification (`cannotBeInstanceOf`) that checks primitive types, array compatibility, class inheritance, interface implementations, and generic bounds before rewriting. This guarantees that reflection checks are only converted to `instanceof` when types are genuinely cast-compatible, preventing automated static analysis refactorings from introducing fatal compilation errors.
+
+---
+
+### [#1153](https://github.com/openrewrite/rewrite-static-analysis/pull/1153) — `ReplaceLambdaWithMethodReference`: fix qualified `this` resolution
+*Merged: 2026-10-28*
+
+The `ReplaceLambdaWithMethodReference` recipe converts single-statement lambdas into clean method references (e.g., `s -> log(s)` to `this::log`). When an instance method is called on an enclosing outer class, the recipe must qualify `this` with the enclosing class name (such as `Outer.this::log`). In issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item C13), the cursor lookup incorrectly stopped at intermediate `J.Lambda` expressions and emitted invalid qualifications like `Base.this::log` using the superclass name instead of the actual enclosing class name (`A.this::log`), producing compilation errors like `error: not an enclosing class: Base`. This PR corrected the cursor resolution so it ignores lambda scopes and walks outward to find the nearest enclosing class or anonymous class assignable to the method's declaring type, correctly prefixing `this` with the enclosing class. This fixes method reference conversions inside nested lambdas and inner classes, ensuring that modernizing functional code produces valid Java scoping without breaking compilation.
+
+---
 
 ### [#1132](https://github.com/openrewrite/rewrite-static-analysis/pull/1132) — `UseJavaStyleArrayDeclarations`: only rewrite declarations with matching dimensions
 *Merged: 2026-10-26*
