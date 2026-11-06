@@ -2,11 +2,18 @@
 
 List of all my open source contributions.
 
-**Total merged: 15**
+**Total merged: 16**
 
 ---
 
-## openrewrite/rewrite (4 merged)
+## openrewrite/rewrite (5 merged)
+
+### [#9536](https://github.com/openrewrite/rewrite/pull/9536) — Preserve outer class type arguments when changing inner type in ChangeType
+*Merged: 2026-11-06*
+
+The `ChangeType` recipe automates renaming classes and updating their imports and type references across codebases. However, in issue [#9291](https://github.com/openrewrite/rewrite/issues/9291), when an inner class was referenced through a parameterized outer class (such as `OldOuter<String>.Registry` $\to$ `NewOuter<String>.Registry2`), the recipe matched the inner class reference and replaced the entire expression with a raw target type string. This wiped out the enclosing class's generic type arguments (`<String>`) and imported the inner class directly, stripping outer class qualification and generating invalid code that failed Java generic type inference. This PR introduced `updateParameterizedFieldAccess` to update enclosing parameterized types in place, preserve their type arguments while checking for nested type changes, and properly update outer class imports across multiple levels of nesting. This guarantees that automated type migration recipes cleanly preserve generic parameters on enclosing classes, preventing type-inference breakage and compilation errors in heavily parameterized enterprise code.
+
+---
 
 ### [#9689](https://github.com/openrewrite/rewrite/pull/9689) — Support single-element package names in ChangePackage
 *Merged: 2026-11-06*
