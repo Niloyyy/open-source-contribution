@@ -2,7 +2,7 @@
 
 List of all my open source contributions.
 
-**Total merged: 16**
+**Total merged: 18**
 
 ---
 
@@ -43,7 +43,21 @@ The test `cannotDownloadMetaDataWhenNoRepositoriesAreDefined` verifies that Open
 
 ---
 
-## openrewrite/rewrite-static-analysis (11 merged)
+## openrewrite/rewrite-static-analysis (13 merged)
+
+### [#1179](https://github.com/openrewrite/rewrite-static-analysis/pull/1179) — `CollectionToArrayShouldHaveProperType`: handle implicit `this` receivers
+*Merged: 2026-11-06*
+
+The `CollectionToArrayShouldHaveProperType` recipe modernizes legacy `collection.toArray()` calls by passing a typed, zero-length array (e.g., `toArray(new String[0])`) to avoid costly array allocations and unsafe type casting. However, in issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item C21), when `(String[]) toArray()` was called without an explicit receiver inside a `Collection` or `List` subclass (such as `class MyList extends ArrayList<String>`), the method call's target receiver was `null`. Passing this `null` receiver into `requireNonNull(methodInvocation.getSelect())` triggered an immediate `NullPointerException`, halting recipe execution. This PR updated the visitor to synthesize a temporary `this` receiver using the declaring class type so `JavaTemplate` can accurately compile and attribute the replacement call, and then cleared the select on the result to preserve the original implicit receiver syntax. This eliminates recipe crashes on collection subclasses and ensures type-safe array conversions work reliably across custom collection implementations.
+
+---
+
+### [#1178](https://github.com/openrewrite/rewrite-static-analysis/pull/1178) — `SimplifyRedundantLogicalExpression`: keep parentheses needed for precedence
+*Merged: 2026-11-06*
+
+The `SimplifyRedundantLogicalExpression` recipe cleans up duplicate boolean or bitwise subexpressions (e.g., simplifying `a && b && a` to `a && b`). However, in issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item E4), whenever the recipe replaced duplicate compound expressions, it called `.unwrap()` directly on the replacement node. Because `.unwrap()` unconditionally strips surrounding parentheses, compound expressions with lower operator precedence than the outer expression lost their grouping—for instance, turning `return (x || y) && (x || y) && z;` into `return x || y && z;`, which evaluates as `x || (y && z)` and silently alters the program's runtime boolean logic. This PR replaced unconditional unwrapping with `ParenthesizeVisitor.maybeParenthesize`, which evaluates the surrounding AST context and operator precedence to keep parentheses whenever higher-precedence outer operators require them, while safely unwrapping only truly redundant grouping. This prevents automated logical simplification from introducing dangerous runtime logic bugs and guarantees semantic equivalence across Java, Kotlin, Groovy, and TypeScript codebases.
+
+---
 
 ### [#1180](https://github.com/openrewrite/rewrite-static-analysis/pull/1180) — `InlineVariable`: avoid changing semantics when inlining before return or throw
 *Merged: 2026-11-06*
