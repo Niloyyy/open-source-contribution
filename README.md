@@ -2,11 +2,18 @@
 
 List of all my open source contributions.
 
-**Total merged: 13**
+**Total merged: 14**
 
 ---
 
-## openrewrite/rewrite (3 merged)
+## openrewrite/rewrite (4 merged)
+
+### [#9689](https://github.com/openrewrite/rewrite/pull/9689) — Support single-element package names in ChangePackage
+*Merged: 2026-11-06*
+
+The `ChangePackage` recipe renames packages across a codebase, updating both package declarations and all referencing imports, fully qualified types, and Javadoc tags. However, in issue [#4142](https://github.com/openrewrite/rewrite/issues/4142), when renaming a single-segment package (e.g., `somepkg` without dots), the recipe only updated the `package` declaration itself while leaving referencing files untouched. This happened because multi-segment packages are represented in the AST as nested field accesses, whereas single-segment package prefixes are root identifiers where `isFullyQualifiedClassReference` returned `false`. This PR updated `visitFieldAccess` to recognize and rewrite single-segment package identifiers in imports, star imports, fully qualified references, and Javadoc `@link` tags, while safely ignoring local variables or fields that share the package name and preserving non-recursive subpackage boundaries. This ensures that renaming packages with single-segment names updates all dependent references across the codebase, preventing broken imports and missing-symbol compilation errors.
+
+---
 
 ### [#8964](https://github.com/openrewrite/rewrite/pull/8964) — Preserve Java import comments through ordering and folding
 *Merged: 2026-09-29*
