@@ -2,7 +2,7 @@
 
 List of all my open source contributions.
 
-**Total merged: 14**
+**Total merged: 15**
 
 ---
 
@@ -36,7 +36,14 @@ The test `cannotDownloadMetaDataWhenNoRepositoriesAreDefined` verifies that Open
 
 ---
 
-## openrewrite/rewrite-static-analysis (10 merged)
+## openrewrite/rewrite-static-analysis (11 merged)
+
+### [#1180](https://github.com/openrewrite/rewrite-static-analysis/pull/1180) — `InlineVariable`: avoid changing semantics when inlining before return or throw
+*Merged: 2026-11-06*
+
+The `InlineVariable` recipe simplifies code by inlining temporary variable declarations and assignments immediately preceding a `return` or `throw` statement. However, in issue [#1116](https://github.com/openrewrite/rewrite-static-analysis/issues/1116) (item C20), the recipe performed inlining without checking for subtle semantic changes: it inlined variables whose declared types differed from their initializers (such as `long v = 1; return v;` in an `Object`-returning method inlining to `return 1;`, which boxed into an `Integer` instead of `Long`), stripped target typing for lambdas and method references (turning `Runnable r = () -> {}; return r;` into an uncompilable `return () -> {};`), and inlined reassignments that were still read in enclosing `finally` or `catch` blocks. This PR introduced `canInline` to prevent inlining when expressions unwrap to lambdas/method references or perform implicit type conversions, and added `isReadInEnclosingCatchOrFinally` to ensure variables read during error handling or cleanup retain their assignments. This guarantees that automated variable inlining preserves exact runtime behavior, prevent silent boxing/widening bugs, and avoids introducing compilation errors.
+
+---
 
 ### [#1161](https://github.com/openrewrite/rewrite-static-analysis/pull/1161) — `UseDiamondOperator`: keep type arguments of an anonymous class assigned to a wildcard type
 *Merged: 2026-10-28*
