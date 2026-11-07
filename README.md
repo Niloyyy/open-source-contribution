@@ -2,7 +2,16 @@
 
 List of all my open source contributions.
 
-**Total merged: 18**
+**Total merged: 19**
+
+---
+
+## rust-lang/cargo (1 merged)
+
+### [#17698](https://github.com/rust-lang/cargo/pull/17698) — `fix(lockfile)`: sort unused patches in Cargo.lock
+*Merged: 2026-11-07*
+
+When Cargo serializes resolution state into `Cargo.lock`, it explicitly sorts `[[package]]` entries and individual package dependencies to ensure deterministic lockfile output. However, in issue [#17375](https://github.com/rust-lang/cargo/issues/17375), `[[patch.unused]]` entries were collected directly from `Resolve::unused_patches()` without sorting. While patch entries normally appeared in alphabetical order when reading from a warm cache, asynchronous network and git queries polled via `FuturesUnordered` yielded results in unpredictable completion order on cold `~/.cargo` caches, or when combining configuration and manifest patches. Running `cargo update` on a cold cache produced out-of-order `[[patch.unused]]` entries, only for a second run on a warm cache to reorder them back, creating non-deterministic lockfile output and noisy git diff churn across different developer machines and CI runners. This PR sorted `unused` entries during lockfile serialization in `src/resolver/encode.rs` using `TomlLockfileDependency`'s `Ord` implementation before constructing the patch table. This guarantees deterministic, reproducible `Cargo.lock` serialization across all cache states and network conditions without altering Cargo's internal resolution storage.
 
 ---
 
