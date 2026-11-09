@@ -2,11 +2,18 @@
 
 List of all my open source contributions.
 
-**Total merged: 19**
+**Total merged: 20**
 
 ---
 
-## rust-lang/cargo (1 merged)
+## rust-lang/cargo (2 merged)
+
+### [#17702](https://github.com/rust-lang/cargo/pull/17702) — `fix(doc)`: do not suggest cargo fix for rustdoc warnings
+*Merged: 2026-11-09*
+
+When `cargo doc` runs `rustdoc` on a crate that emits compiler or lint warnings with machine-applicable suggestions (such as `rustdoc::bare_urls`), Cargo's warning summary in `DrainState::report_warning_count` previously prompted users with `(run cargo fix --lib -p <pkg> to apply <n> suggestion)`. However, `cargo fix` only invokes `rustc` in check mode and does not execute `rustdoc` (tracked in [#13025](https://github.com/rust-lang/cargo/issues/13025)), meaning running the suggested command produced no effect and confused developers. This PR updated `DrainState::report_warning_count` in `src/compiler/job_queue/mod.rs` to exclude `rustdoc` compilation units (`!unit.mode.is_doc() && !unit.mode.is_doc_scrape()`), matching how Cargo distinguishes `rustdoc` from `rustc` invocations across the compiler pipeline. This prevents misleading `cargo fix` prompts when generating documentation while continuing to offer automated fix suggestions for standard `rustc` compiler units.
+
+---
 
 ### [#17698](https://github.com/rust-lang/cargo/pull/17698) — `fix(lockfile)`: sort unused patches in Cargo.lock
 *Merged: 2026-11-07*
